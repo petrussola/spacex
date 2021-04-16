@@ -29,6 +29,7 @@ import Breadcrumbs from "./breadcrumbs";
 export default function Launch() {
   let { launchId } = useParams();
   const { data: launch, error } = useSpaceX(`/launches/${launchId}`);
+  debugger
 
   if (error) return <Error />;
   if (!launch) {
