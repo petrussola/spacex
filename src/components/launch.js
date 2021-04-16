@@ -19,17 +19,21 @@ import {
   Stack,
   AspectRatioBox,
   StatGroup,
+  Tooltip,
 } from "@chakra-ui/core";
 
 import { useSpaceX } from "../utils/use-space-x";
-import { formatDateTime } from "../utils/format-date";
+import {
+  formatDateTime,
+  transformAmPm,
+  checkDayPadTime,
+} from "../utils/format-date";
 import Error from "./error";
 import Breadcrumbs from "./breadcrumbs";
 
 export default function Launch() {
   let { launchId } = useParams();
   const { data: launch, error } = useSpaceX(`/launches/${launchId}`);
-  debugger
 
   if (error) return <Error />;
   if (!launch) {
@@ -115,6 +119,13 @@ function Header({ launch }) {
 }
 
 function TimeAndLocation({ launch }) {
+  const localTimeParsed = launch.launch_date_local.split("T")[1].split("-")[0]; // extract pad launch time from api response
+  const [timeLocalPad, amPm] = transformAmPm(localTimeParsed); // return string with local time in 12h format (consistency with the User locale time format, which is AM/PM)
+  const dateLocalPad = formatDateTime(launch.launch_date_local).split(","); 
+  const consolidatedDatePad = checkDayPadTime(
+    launch.launch_date_local,
+    dateLocalPad[0]
+  ); // consolidate time at launch pad, since it can be different day from the User locale e.g. launch pad in Florida at 7pm is beyond midnight in UTC
   return (
     <SimpleGrid columns={[1, 1, 2]} borderWidth="1px" p="4" borderRadius="md">
       <Stat>
@@ -125,7 +136,14 @@ function TimeAndLocation({ launch }) {
           </Box>
         </StatLabel>
         <StatNumber fontSize={["md", "xl"]}>
-          {formatDateTime(launch.launch_date_local)}
+          <Tooltip
+            hasArrow
+            label={formatDateTime(launch.launch_date_local)}
+            aria-label="A tooltip"
+            placement="bottom-end"
+          >
+            {`${consolidatedDatePad}, ${dateLocalPad[1]}, ${timeLocalPad} ${amPm} (Launch Pad time)`}
+          </Tooltip>
         </StatNumber>
         <StatHelpText>{timeAgo(launch.launch_date_utc)}</StatHelpText>
       </Stat>
