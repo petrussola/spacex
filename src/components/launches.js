@@ -1,7 +1,16 @@
-import React from "react";
-import { Badge, Box, Image, SimpleGrid, Text, Flex } from "@chakra-ui/core";
+import React, { useState } from "react";
+import {
+  Badge,
+  Box,
+  Image,
+  SimpleGrid,
+  Text,
+  Flex,
+  IconButton,
+} from "@chakra-ui/core";
 import { format as timeAgo } from "timeago.js";
 import { Link } from "react-router-dom";
+import { MdStar, MdStarBorder } from "react-icons/md";
 
 import { useSpaceXPaginated } from "../utils/use-space-x";
 import { formatDate } from "../utils/format-date";
@@ -46,6 +55,12 @@ export default function Launches() {
 }
 
 export function LaunchItem({ launch }) {
+  const [isFaved, setIsFaved] = useState(false);
+
+  const addFav = (e) => {
+    e.preventDefault();
+    setIsFaved((isFaved) => !isFaved);
+  };
   return (
     <Box
       as={Link}
@@ -79,7 +94,7 @@ export function LaunchItem({ launch }) {
       />
 
       <Box p="6">
-        <Box d="flex" alignItems="baseline">
+        <Box d="flex" alignItems="center">
           {launch.launch_success ? (
             <Badge px="2" variant="solid" variantColor="green">
               Successful
@@ -96,9 +111,25 @@ export function LaunchItem({ launch }) {
             fontSize="xs"
             textTransform="uppercase"
             ml="2"
+            width="100%"
           >
             {launch.rocket.rocket_name} &bull; {launch.launch_site.site_name}
           </Box>
+          <IconButton
+            d="flex"
+            justifyContent="flex-end"
+            aria-label="Add to favorites"
+            icon={isFaved ? MdStar : MdStarBorder}
+            variant="ghost"
+            variantColor="white"
+            color="yellow.400"
+            fontSize="2rem"
+            onClick={(e) => addFav(e)}
+            outline="none"
+            _focus={{
+              boxShadow: "none",
+            }}
+          />
         </Box>
 
         <Box
