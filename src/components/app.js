@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import { Flex, Text } from "@chakra-ui/core";
 
@@ -9,12 +9,22 @@ import LaunchPads from "./launch-pads";
 import LaunchPad from "./launch-pad";
 
 export default function App() {
+  const [faveLaunches, setFaveLaunches] = useState({});
+
   return (
     <div>
       <NavBar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/launches" element={<Launches />} />
+        <Route
+          path="/launches"
+          element={
+            <Launches
+              faveLaunches={faveLaunches}
+              setFaveLaunches={setFaveLaunches}
+            />
+          }
+        />
         <Route path="/launches/:launchId" element={<Launch />} />
         <Route path="/launch-pads" element={<LaunchPads />} />
         <Route path="/launch-pads/:launchPadId" element={<LaunchPad />} />

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Badge,
   Box,
@@ -20,7 +20,7 @@ import LoadMoreButton from "./load-more-button";
 
 const PAGE_SIZE = 12;
 
-export default function Launches() {
+export default function Launches({ faveLaunches, setFaveLaunches }) {
   const { data, error, isValidating, setSize, size } = useSpaceXPaginated(
     "/launches/past",
     {
@@ -30,6 +30,14 @@ export default function Launches() {
     }
   );
   console.log(data, error);
+
+  useEffect(() => {
+    const data = JSON.parse(localStorage.getItem("favorites"));
+    if (data) {
+      setFaveLaunches({ ...faveLaunches, ...data });
+    }
+  }, []);
+
   return (
     <div>
       <Breadcrumbs
@@ -41,7 +49,12 @@ export default function Launches() {
           data
             .flat()
             .map((launch) => (
-              <LaunchItem launch={launch} key={launch.flight_number} />
+              <LaunchItem
+                launch={launch}
+                key={launch.flight_number}
+                faveLaunches={faveLaunches}
+                setFaveLaunches={setFaveLaunches}
+              />
             ))}
       </SimpleGrid>
       <LoadMoreButton
@@ -54,13 +67,33 @@ export default function Launches() {
   );
 }
 
-export function LaunchItem({ launch }) {
+export function LaunchItem({ launch, faveLaunches, setFaveLaunches }) {
   const [isFaved, setIsFaved] = useState(false);
 
   const addFav = (e) => {
     e.preventDefault();
     setIsFaved((isFaved) => !isFaved);
   };
+
+  useEffect(() => {
+    if (isFaved) {
+      setFaveLaunches({ ...faveLaunches, [launch.flight_number]: true });
+    } else {
+      let { [launch.flight_number]: id, ...rest } = faveLaunches;
+      setFaveLaunches(rest);
+    }
+  }, [isFaved]);
+
+  useEffect(() => {
+    localStorage.setItem("favorites", JSON.stringify(faveLaunches));
+  }, [faveLaunches]);
+
+  useEffect(() => {
+    if (launch.flight_number in faveLaunches) {
+      setIsFaved(true);
+    }
+  }, []);
+
   return (
     <Box
       as={Link}
@@ -120,8 +153,7 @@ export function LaunchItem({ launch }) {
             justifyContent="flex-end"
             aria-label="Add to favorites"
             icon={isFaved ? MdStar : MdStarBorder}
-            variant="ghost"
-            variantColor="white"
+            variant="unstyled"
             color="yellow.400"
             fontSize="2rem"
             onClick={(e) => addFav(e)}
