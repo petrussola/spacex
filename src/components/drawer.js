@@ -38,17 +38,19 @@ export default function DrawerComponent({
         <DrawerHeader>{`Favorite ${pageName}`}</DrawerHeader>
         <DrawerBody>
           <SimpleGrid m={[2, null, 6]} minChildWidth="350px" spacing="4">
-            {faveLaunches.map((launch) => {
-              return (
-                <LaunchItem
-                  isFavMenu={true}
-                  launch={launch}
-                  key={launch.flight_number}
-                  faveLaunches={faveLaunches}
-                  setFaveLaunches={setFaveLaunches}
-                />
-              );
-            })}
+            {faveLaunches.length === 0
+              ? `No favorite ${pageName} yet. Click on the star to get started!`
+              : faveLaunches.map((launch) => {
+                  return (
+                    <LaunchItem
+                      isFavMenu={true}
+                      launch={launch}
+                      key={launch.flight_number}
+                      faveLaunches={faveLaunches}
+                      setFaveLaunches={setFaveLaunches}
+                    />
+                  );
+                })}
           </SimpleGrid>
         </DrawerBody>
       </DrawerContent>
