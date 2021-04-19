@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/core";
 import { format as timeAgo } from "timeago.js";
 import { Link } from "react-router-dom";
-import { MdStar, MdStarBorder } from "react-icons/md";
+import { MdStar, MdStarBorder, MdCancel } from "react-icons/md";
 
 import { useSpaceXPaginated } from "../utils/use-space-x";
 import { formatDate } from "../utils/format-date";
@@ -69,6 +69,7 @@ export default function Launches({
             .flat()
             .map((launch) => (
               <LaunchItem
+                isFavMenu={false}
                 launch={launch}
                 key={launch.flight_number}
                 faveLaunches={faveLaunches}
@@ -94,7 +95,12 @@ export default function Launches({
   );
 }
 
-export function LaunchItem({ launch, faveLaunches, setFaveLaunches }) {
+export function LaunchItem({
+  launch,
+  faveLaunches,
+  setFaveLaunches,
+  isFavMenu,
+}) {
   const [isFaved, setIsFaved] = useState(false);
 
   const addFav = (e) => {
@@ -132,6 +138,22 @@ export function LaunchItem({ launch, faveLaunches, setFaveLaunches }) {
       overflow="hidden"
       position="relative"
     >
+      <IconButton
+        aria-label="Remove item from favorite list"
+        icon={MdCancel}
+        fontSize="2rem"
+        position="absolute"
+        top="0"
+        right="0"
+        bg="white"
+        variantColor="white"
+        color="red.600"
+        visibility={isFavMenu ? "visible" : "hidden"}
+        onClick={(e) => addFav(e)}
+        id={isFaved ? "Un-faving" : "Faving"}
+        zIndex={7}
+        isRound={true}
+      />
       <Image
         src={
           launch.links.flickr_images[0]?.replace("_o.jpg", "_z.jpg") ??
@@ -190,6 +212,7 @@ export function LaunchItem({ launch, faveLaunches, setFaveLaunches }) {
             _focus={{
               boxShadow: "none",
             }}
+            visibility={isFavMenu ? "hidden" : "visible"}
           />
         </Box>
 

@@ -6,6 +6,7 @@ import {
   DrawerOverlay,
   DrawerContent,
   DrawerCloseButton,
+  SimpleGrid,
 } from "@chakra-ui/core";
 import { useLocation } from "react-router-dom";
 
@@ -35,16 +36,19 @@ export default function DrawerComponent({
         <DrawerCloseButton />
         <DrawerHeader>{`Favorite ${pageName}`}</DrawerHeader>
         <DrawerBody>
-          {faveLaunches.map((launch) => {
-            return (
-              <LaunchItem
-                launch={launch}
-                key={launch.flight_number}
-                faveLaunches={faveLaunches}
-                setFaveLaunches={setFaveLaunches}
-              />
-            );
-          })}
+          <SimpleGrid m={[2, null, 6]} minChildWidth="350px" spacing="4">
+            {faveLaunches.map((launch) => {
+              return (
+                <LaunchItem
+                  isFavMenu={true}
+                  launch={launch}
+                  key={launch.flight_number}
+                  faveLaunches={faveLaunches}
+                  setFaveLaunches={setFaveLaunches}
+                />
+              );
+            })}
+          </SimpleGrid>
         </DrawerBody>
       </DrawerContent>
     </Drawer>
