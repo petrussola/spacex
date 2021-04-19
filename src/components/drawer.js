@@ -30,6 +30,7 @@ export default function DrawerComponent({
       finalFocusRef={btnRef}
       scrollBehavior="inside"
       size="md"
+      closeOnOverlayClick={false}
     >
       <DrawerOverlay />
       <DrawerContent>
