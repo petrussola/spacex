@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Badge,
   Box,
@@ -7,6 +7,8 @@ import {
   Text,
   Flex,
   IconButton,
+  Button,
+  useDisclosure,
 } from "@chakra-ui/core";
 import { format as timeAgo } from "timeago.js";
 import { Link } from "react-router-dom";
@@ -17,10 +19,18 @@ import { formatDate } from "../utils/format-date";
 import Error from "./error";
 import Breadcrumbs from "./breadcrumbs";
 import LoadMoreButton from "./load-more-button";
+import DrawerComponent from "./drawer";
 
 const PAGE_SIZE = 12;
 
-export default function Launches({ faveLaunches, setFaveLaunches }) {
+export default function Launches({
+  faveLaunches,
+  setFaveLaunches,
+  favedItems,
+}) {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const btnRef = useRef();
+
   const { data, error, isValidating, setSize, size } = useSpaceXPaginated(
     "/launches/past",
     {
@@ -34,15 +44,24 @@ export default function Launches({ faveLaunches, setFaveLaunches }) {
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem("favorites"));
     if (data) {
-      setFaveLaunches({ ...faveLaunches, ...data });
+      setFaveLaunches(data);
     }
   }, []);
 
+  useEffect(() => {
+    localStorage.setItem("favorites", JSON.stringify(faveLaunches));
+  }, [faveLaunches]);
+
   return (
     <div>
-      <Breadcrumbs
-        items={[{ label: "Home", to: "/" }, { label: "Launches" }]}
-      />
+      <Box d="flex" justifyContent="space-between" alignItems="center">
+        <Breadcrumbs
+          items={[{ label: "Home", to: "/" }, { label: "Launches" }]}
+        />
+        <Button ref={btnRef} variantColor="teal" onClick={onOpen} mr="1.5rem">
+          Favorites
+        </Button>
+      </Box>
       <SimpleGrid m={[2, null, 6]} minChildWidth="350px" spacing="4">
         {error && <Error />}
         {data &&
@@ -54,6 +73,7 @@ export default function Launches({ faveLaunches, setFaveLaunches }) {
                 key={launch.flight_number}
                 faveLaunches={faveLaunches}
                 setFaveLaunches={setFaveLaunches}
+                favedItems={favedItems}
               />
             ))}
       </SimpleGrid>
@@ -62,6 +82,13 @@ export default function Launches({ faveLaunches, setFaveLaunches }) {
         data={data}
         pageSize={PAGE_SIZE}
         isLoadingMore={isValidating}
+      />
+      <DrawerComponent
+        isOpen={isOpen}
+        onClose={onClose}
+        btnRef={btnRef}
+        faveLaunches={faveLaunches}
+        setFaveLaunches={setFaveLaunches}
       />
     </div>
   );
@@ -72,27 +99,28 @@ export function LaunchItem({ launch, faveLaunches, setFaveLaunches }) {
 
   const addFav = (e) => {
     e.preventDefault();
-    setIsFaved((isFaved) => !isFaved);
+    if (e.currentTarget.id === "Faving") {
+      setIsFaved(true);
+      setFaveLaunches([...faveLaunches, launch]);
+    } else if (e.currentTarget.id === "Un-faving") {
+      const data = faveLaunches.filter((item) => {
+        return item.flight_number !== launch.flight_number;
+      });
+      setIsFaved(false);
+      setFaveLaunches(data);
+    }
   };
 
   useEffect(() => {
-    if (isFaved) {
-      setFaveLaunches({ ...faveLaunches, [launch.flight_number]: true });
-    } else {
-      let { [launch.flight_number]: id, ...rest } = faveLaunches;
-      setFaveLaunches(rest);
-    }
-  }, [isFaved]);
-
-  useEffect(() => {
-    localStorage.setItem("favorites", JSON.stringify(faveLaunches));
-  }, [faveLaunches]);
-
-  useEffect(() => {
-    if (launch.flight_number in faveLaunches) {
+    const verdict = faveLaunches.some(
+      (item) => item.flight_number === launch.flight_number
+    );
+    if (verdict) {
       setIsFaved(true);
+    } else {
+      setIsFaved(false);
     }
-  }, []);
+  }, [faveLaunches]);
 
   return (
     <Box
@@ -151,7 +179,8 @@ export function LaunchItem({ launch, faveLaunches, setFaveLaunches }) {
           <IconButton
             d="flex"
             justifyContent="flex-end"
-            aria-label="Add to favorites"
+            aria-label="Favorite Button"
+            id={isFaved ? "Un-faving" : "Faving"}
             icon={isFaved ? MdStar : MdStarBorder}
             variant="unstyled"
             color="yellow.400"
@@ -183,3 +212,44 @@ export function LaunchItem({ launch, faveLaunches, setFaveLaunches }) {
     </Box>
   );
 }
+
+// export function DrawerComponent({
+//   isOpen,
+//   onClose,
+//   btnRef,
+//   faveLaunches,
+//   setFaveLaunches,
+//   data,
+// }) {
+//   const location = useLocation();
+//   const pageName = location.pathname.split("/")[1];
+
+//   return (
+//     <Drawer
+//       isOpen={isOpen}
+//       placement="right"
+//       onClose={onClose}
+//       finalFocusRef={btnRef}
+//       scrollBehavior="inside"
+//       size="md"
+//     >
+//       <DrawerOverlay />
+//       <DrawerContent>
+//         <DrawerCloseButton />
+//         <DrawerHeader>{`Favorite ${pageName}`}</DrawerHeader>
+//         <DrawerBody>
+//           {faveLaunches.map((launch) => {
+//             return (
+//               <LaunchItem
+//                 launch={launch}
+//                 key={launch.flight_number}
+//                 faveLaunches={faveLaunches}
+//                 setFaveLaunches={setFaveLaunches}
+//               />
+//             );
+//           })}
+//         </DrawerBody>
+//       </DrawerContent>
+//     </Drawer>
+//   );
+// }

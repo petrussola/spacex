@@ -9,7 +9,7 @@ import LaunchPads from "./launch-pads";
 import LaunchPad from "./launch-pad";
 
 export default function App() {
-  const [faveLaunches, setFaveLaunches] = useState({});
+  const [faveLaunches, setFaveLaunches] = useState([]);
 
   return (
     <div>
