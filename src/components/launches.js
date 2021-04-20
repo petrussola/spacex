@@ -41,17 +41,6 @@ export default function Launches({
   );
   console.log(data, error);
 
-  useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("favorites"));
-    if (data) {
-      setFaveLaunches(data);
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("favorites", JSON.stringify(faveLaunches));
-  }, [faveLaunches]);
-
   return (
     <div>
       <Box d="flex" justifyContent="space-between" alignItems="center">
@@ -126,7 +115,7 @@ export function LaunchItem({
     } else {
       setIsFaved(false);
     }
-  }, [faveLaunches]);
+  }, [faveLaunches, launch.flight_number]);
 
   return (
     <Box

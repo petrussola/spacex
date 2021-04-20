@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import { Flex, Text } from "@chakra-ui/core";
 
@@ -10,6 +10,17 @@ import LaunchPad from "./launch-pad";
 
 export default function App() {
   const [faveLaunches, setFaveLaunches] = useState([]);
+
+  useEffect(() => {
+    const data = JSON.parse(localStorage.getItem("favorites"));
+    if (data) {
+      setFaveLaunches(data);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("favorites", JSON.stringify(faveLaunches));
+  }, [faveLaunches]);
 
   return (
     <div>
@@ -25,7 +36,15 @@ export default function App() {
             />
           }
         />
-        <Route path="/launches/:launchId" element={<Launch />} />
+        <Route
+          path="/launches/:launchId"
+          element={
+            <Launch
+              faveLaunches={faveLaunches}
+              setFaveLaunches={setFaveLaunches}
+            />
+          }
+        />
         <Route path="/launch-pads" element={<LaunchPads />} />
         <Route path="/launch-pads/:launchPadId" element={<LaunchPad />} />
       </Routes>
