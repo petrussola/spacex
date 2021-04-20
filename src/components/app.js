@@ -10,17 +10,25 @@ import LaunchPad from "./launch-pad";
 
 export default function App() {
   const [faveLaunches, setFaveLaunches] = useState([]);
+  const [favePads, setFavePads] = useState([]);
 
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("favorites"));
-    if (data) {
-      setFaveLaunches(data);
+    const dataLaunches = JSON.parse(localStorage.getItem("favoriteLaunches"));
+    if (dataLaunches) {
+      setFaveLaunches(dataLaunches);
+    }
+
+    const dataPads = JSON.parse(localStorage.getItem("favoritePads"));
+    if (dataPads) {
+      setFavePads(dataPads);
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("favorites", JSON.stringify(faveLaunches));
-  }, [faveLaunches]);
+    localStorage.setItem("favoriteLaunches", JSON.stringify(faveLaunches));
+
+    localStorage.setItem("favoritePads", JSON.stringify(favePads));
+  }, [faveLaunches, favePads]);
 
   return (
     <div>
@@ -45,8 +53,21 @@ export default function App() {
             />
           }
         />
-        <Route path="/launch-pads" element={<LaunchPads />} />
-        <Route path="/launch-pads/:launchPadId" element={<LaunchPad />} />
+        <Route
+          path="/launch-pads"
+          element={<LaunchPads favePads={favePads} setFavePads={setFavePads} />}
+        />
+        <Route
+          path="/launch-pads/:launchPadId"
+          element={
+            <LaunchPad
+              favePads={favePads}
+              setFavePads={setFavePads}
+              faveLaunches={faveLaunches}
+              setFaveLaunches={setFaveLaunches}
+            />
+          }
+        />
       </Routes>
     </div>
   );

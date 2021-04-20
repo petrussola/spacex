@@ -35,11 +35,12 @@ import Breadcrumbs from "./breadcrumbs";
 
 export default function Launch({ faveLaunches, setFaveLaunches }) {
   let { launchId } = useParams();
+
   const [isFaved, setIsFaved] = useState(false);
+  
   const { data: launch, error } = useSpaceX(`/launches/${launchId}`);
 
   const addFav = (e) => {
-    debugger;
     e.preventDefault();
     if (e.currentTarget.id === "Faving") {
       setIsFaved(true);

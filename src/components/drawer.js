@@ -11,6 +11,7 @@ import {
 import { useLocation } from "react-router-dom";
 
 import { LaunchItem } from "./launches";
+import { LaunchPadItem } from "./launch-pads";
 
 export default function DrawerComponent({
   isOpen,
@@ -18,6 +19,10 @@ export default function DrawerComponent({
   btnRef,
   faveLaunches,
   setFaveLaunches,
+  favePads,
+  setFavePads,
+  listItems,
+  setListItems,
 }) {
   const location = useLocation();
   const pageName = location.pathname.split("/")[1];
@@ -38,16 +43,23 @@ export default function DrawerComponent({
         <DrawerHeader>{`Favorite ${pageName}`}</DrawerHeader>
         <DrawerBody>
           <SimpleGrid m={[2, null, 6]} minChildWidth="350px" spacing="4">
-            {faveLaunches.length === 0
+            {listItems.length === 0
               ? `No favorite ${pageName} yet. Click on the star to get started!`
-              : faveLaunches.map((launch) => {
+              : listItems.map((item) => {
                   return (
-                    <LaunchItem
+                    <WrappedComponent
                       isFavMenu={true}
-                      launch={launch}
-                      key={launch.flight_number}
+                      item={item}
+                      key={
+                        item.flight_number ? item.flight_number : item.site_id
+                      }
                       faveLaunches={faveLaunches}
                       setFaveLaunches={setFaveLaunches}
+                      favePads={favePads}
+                      setFavePads={setFavePads}
+                      pageName={pageName}
+                      listItems={listItems}
+                      setListItems={setListItems}
                     />
                   );
                 })}
@@ -57,3 +69,27 @@ export default function DrawerComponent({
     </Drawer>
   );
 }
+
+const WrappedComponent = ({ pageName, item, listItems, setListItems }) => {
+  if (pageName === "launches") {
+    return (
+      <LaunchItem
+        isFavMenu={true}
+        launch={item}
+        key={item.flight_number}
+        faveLaunches={listItems}
+        setFaveLaunches={setListItems}
+      />
+    );
+  } else if (pageName === "launch-pads") {
+    return (
+      <LaunchPadItem
+        isFavMenu={true}
+        launchPad={item}
+        key={item.site_id}
+        favePads={listItems}
+        setFavePads={setListItems}
+      />
+    );
+  }
+};

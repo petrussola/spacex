@@ -23,11 +23,7 @@ import DrawerComponent from "./drawer";
 
 const PAGE_SIZE = 12;
 
-export default function Launches({
-  faveLaunches,
-  setFaveLaunches,
-  favedItems,
-}) {
+export default function Launches({ faveLaunches, setFaveLaunches }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef();
 
@@ -63,7 +59,6 @@ export default function Launches({
                 key={launch.flight_number}
                 faveLaunches={faveLaunches}
                 setFaveLaunches={setFaveLaunches}
-                favedItems={favedItems}
               />
             ))}
       </SimpleGrid>
@@ -79,6 +74,8 @@ export default function Launches({
         btnRef={btnRef}
         faveLaunches={faveLaunches}
         setFaveLaunches={setFaveLaunches}
+        listItems={faveLaunches}
+        setListItems={setFaveLaunches}
       />
     </div>
   );
@@ -107,9 +104,9 @@ export function LaunchItem({
   };
 
   useEffect(() => {
-    const verdict = faveLaunches.some(
-      (item) => item.flight_number === launch.flight_number
-    );
+    const verdict = faveLaunches.some((item) => {
+      return item.flight_number === launch.flight_number;
+    });
     if (verdict) {
       setIsFaved(true);
     } else {
@@ -224,44 +221,3 @@ export function LaunchItem({
     </Box>
   );
 }
-
-// export function DrawerComponent({
-//   isOpen,
-//   onClose,
-//   btnRef,
-//   faveLaunches,
-//   setFaveLaunches,
-//   data,
-// }) {
-//   const location = useLocation();
-//   const pageName = location.pathname.split("/")[1];
-
-//   return (
-//     <Drawer
-//       isOpen={isOpen}
-//       placement="right"
-//       onClose={onClose}
-//       finalFocusRef={btnRef}
-//       scrollBehavior="inside"
-//       size="md"
-//     >
-//       <DrawerOverlay />
-//       <DrawerContent>
-//         <DrawerCloseButton />
-//         <DrawerHeader>{`Favorite ${pageName}`}</DrawerHeader>
-//         <DrawerBody>
-//           {faveLaunches.map((launch) => {
-//             return (
-//               <LaunchItem
-//                 launch={launch}
-//                 key={launch.flight_number}
-//                 faveLaunches={faveLaunches}
-//                 setFaveLaunches={setFaveLaunches}
-//               />
-//             );
-//           })}
-//         </DrawerBody>
-//       </DrawerContent>
-//     </Drawer>
-//   );
-// }
