@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, Link as RouterLink } from "react-router-dom";
 import { format as timeAgo } from "timeago.js";
 import { Watch, MapPin, Navigation, Layers } from "react-feather";
@@ -20,7 +20,9 @@ import {
   AspectRatioBox,
   StatGroup,
   Tooltip,
+  IconButton,
 } from "@chakra-ui/core";
+import { MdStar, MdStarBorder } from "react-icons/md";
 
 import { useSpaceX } from "../utils/use-space-x";
 import {
@@ -31,9 +33,37 @@ import {
 import Error from "./error";
 import Breadcrumbs from "./breadcrumbs";
 
-export default function Launch() {
+export default function Launch({ faveLaunches, setFaveLaunches }) {
   let { launchId } = useParams();
+
+  const [isFaved, setIsFaved] = useState(false);
+  
   const { data: launch, error } = useSpaceX(`/launches/${launchId}`);
+
+  const addFav = (e) => {
+    e.preventDefault();
+    if (e.currentTarget.id === "Faving") {
+      setIsFaved(true);
+      setFaveLaunches([...faveLaunches, launch]);
+    } else if (e.currentTarget.id === "Un-faving") {
+      const data = faveLaunches.filter((item) => {
+        return item.flight_number !== launch.flight_number;
+      });
+      setIsFaved(false);
+      setFaveLaunches(data);
+    }
+  };
+
+  useEffect(() => {
+    const verdict = faveLaunches.some((item) => {
+      return item.flight_number.toString() === launchId;
+    });
+    if (verdict) {
+      setIsFaved(true);
+    } else {
+      setIsFaved(false);
+    }
+  }, [faveLaunches, launchId]);
 
   if (error) return <Error />;
   if (!launch) {
@@ -53,7 +83,7 @@ export default function Launch() {
           { label: `#${launch.flight_number}` },
         ]}
       />
-      <Header launch={launch} />
+      <Header launch={launch} isFaved={isFaved} addFav={addFav} />
       <Box m={[3, 6]}>
         <TimeAndLocation launch={launch} />
         <RocketInfo launch={launch} />
@@ -67,7 +97,7 @@ export default function Launch() {
   );
 }
 
-function Header({ launch }) {
+function Header({ launch, isFaved, addFav }) {
   return (
     <Flex
       bgImage={`url(${launch.links.flickr_images[0]})`}
@@ -100,7 +130,22 @@ function Header({ launch }) {
       >
         {launch.mission_name}
       </Heading>
-      <Stack isInline spacing="3">
+      <Stack isInline spacing="3" d="flex" alignItems="center">
+        <IconButton
+          d="flex"
+          justifyContent="flex-end"
+          aria-label="Favorite Button"
+          id={isFaved ? "Un-faving" : "Faving"}
+          icon={isFaved ? MdStar : MdStarBorder}
+          variant="unstyled"
+          color="yellow.400"
+          fontSize="2rem"
+          onClick={(e) => addFav(e)}
+          outline="none"
+          _focus={{
+            boxShadow: "none",
+          }}
+        />
         <Badge variantColor="purple" fontSize={["xs", "md"]}>
           #{launch.flight_number}
         </Badge>
@@ -121,7 +166,7 @@ function Header({ launch }) {
 function TimeAndLocation({ launch }) {
   const localTimeParsed = launch.launch_date_local.split("T")[1].split("-")[0]; // extract pad launch time from api response
   const [timeLocalPad, amPm] = transformAmPm(localTimeParsed); // return string with local time in 12h format (consistency with the User locale time format, which is AM/PM)
-  const dateLocalPad = formatDateTime(launch.launch_date_local).split(","); 
+  const dateLocalPad = formatDateTime(launch.launch_date_local).split(",");
   const consolidatedDatePad = checkDayPadTime(
     launch.launch_date_local,
     dateLocalPad[0]
