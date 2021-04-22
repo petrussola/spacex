@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Flex, Box, IconButton, Progress, Icon } from "@chakra-ui/core";
 
 import { useSpaceX } from "../utils/use-space-x";
+import Timeline from "./timeline";
+import HistoryCard from "./history-card";
+import Breadcrumbs from "./breadcrumbs";
 
 export default function History() {
   const [countItem, setCountItem] = useState(0);
@@ -29,50 +31,12 @@ export default function History() {
   }
 
   return (
-    <Box
-      display="flex"
-      flexDirection="row"
-      justifyContent="center"
-      alignItems="center"
-      height="2rem"
-      padding="2rem"
-    >
-      <IconButton
-        icon="arrow-left"
-        width="10%"
-        variant="ghost"
-        onClick={() => changeItem("down")}
-        isDisabled={countItem === 0}
+    <>
+      <Breadcrumbs
+        items={[{ label: "Home", to: "/" }, { label: "SpaceX History" }]}
       />
-      <Progress
-        value={((countItem + 1) / data.length) * 100}
-        size="lg"
-        width="100%"
-      />
-      <IconButton
-        icon="arrow-right"
-        width="10%"
-        variant="ghost"
-        onClick={() => changeItem("up")}
-        isDisabled={countItem === data.length - 1}
-      />
-    </Box>
+      <Timeline countItem={countItem} changeItem={changeItem} data={data} />
+      <HistoryCard data={data[countItem]} />
+    </>
   );
-
-  //   return (
-  //     <Flex direction="column" align="center" justify="center">
-  //       <Box>{JSON.stringify(data[countItem])}</Box>
-  //       <Flex
-  //         direction="row"
-  //         align="center"
-  //         justify="space-between"
-  //         width="100vw"
-  //         // height="300px"
-  //       >
-  //         {/* <IconButton></IconButton> */}
-  //         <Progress value={60} bg="red" color="green"/>
-  //         {/* <IconButton></IconButton> */}
-  //       </Flex>
-  //     </Flex>
-  //   );
 }
