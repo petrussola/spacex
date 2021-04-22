@@ -14,8 +14,13 @@ export default function History() {
   console.log(data, error);
 
   useEffect(() => {
-    localStorage.setItem("history_item", countItem.toString());
+    const index = JSON.parse(localStorage.getItem("index-history"));
+    setCountItem(index);
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem("index-history", countItem);
+  }, [countItem]);
 
   const changeItem = (direction) => {
     if (direction === "up" && countItem < data.length) {
