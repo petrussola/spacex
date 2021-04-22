@@ -1,6 +1,8 @@
 import React from "react";
 import { Box, Text, Button } from "@chakra-ui/core";
 
+import { formatDateTime } from "../utils/format-date";
+
 export default function HistoryCard({ data }) {
   const redirectHandler = (link) => {
     window.location.href = link;
@@ -21,10 +23,12 @@ export default function HistoryCard({ data }) {
         letterSpacing="wide"
         fontSize="lg"
         textTransform="uppercase"
-        ml="2"
         width="100%"
       >
         {data.title}
+      </Box>
+      <Box mt="1" fontWeight="semibold" as="h4" lineHeight="tight" isTruncated>
+        {formatDateTime(data.event_date_utc)}
       </Box>
       <Text color="gray.700" fontSize={["md", null, "lg"]} my="8">
         {data.details}
