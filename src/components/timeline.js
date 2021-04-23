@@ -27,8 +27,11 @@ export default function Timeline({ countItem, changeItem, data }) {
         padding="2rem"
       >
         <Tooltip
-          label={countItem !== 0 ? "Click to go back in time" : "You have reached the start"}
-          isDisabled={countItem === 0}
+          label={
+            countItem !== 0
+              ? "Click to go back in time"
+              : "You have reached the start"
+          }
           placement="bottom"
         >
           <IconButton
@@ -42,6 +45,7 @@ export default function Timeline({ countItem, changeItem, data }) {
             _focus={{
               boxShadow: "none",
             }}
+            size="sm"
           />
         </Tooltip>
         <Progress
@@ -55,7 +59,6 @@ export default function Timeline({ countItem, changeItem, data }) {
               ? "Click to advance in time"
               : "No more historical events"
           }
-          isDisabled={countItem === data.length - 1}
           placement="bottom"
         >
           <IconButton
@@ -69,6 +72,7 @@ export default function Timeline({ countItem, changeItem, data }) {
             _focus={{
               boxShadow: "none",
             }}
+            size="sm"
           />
         </Tooltip>
       </Box>
