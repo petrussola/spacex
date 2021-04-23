@@ -8,10 +8,7 @@ import Breadcrumbs from "./breadcrumbs";
 
 export default function History() {
   const [countItem, setCountItem] = useState(0);
-  const { data, error, isValidating, setSize, size } = useSpaceX(
-    "/history",
-    {}
-  );
+  const { data, error } = useSpaceX("/history", {});
   console.log(data, error);
 
   useEffect(() => {
