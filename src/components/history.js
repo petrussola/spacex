@@ -13,7 +13,11 @@ export default function History() {
 
   useEffect(() => {
     const index = JSON.parse(localStorage.getItem("index-history"));
-    setCountItem(index);
+    if (!index) {
+      setCountItem(0);
+    } else {
+      setCountItem(index);
+    }
   }, []);
 
   useEffect(() => {
