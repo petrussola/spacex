@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Button, Box } from "@chakra-ui/core";
 
 import { useSpaceX } from "../utils/use-space-x";
 import Timeline from "./timeline";
@@ -31,15 +32,29 @@ export default function History() {
     return;
   };
 
+  const reset = () => {
+    setCountItem(0);
+  };
+
   if (!data) {
     return <div>Loading</div>;
   }
 
   return (
     <>
-      <Breadcrumbs
-        items={[{ label: "Home", to: "/" }, { label: "SpaceX History" }]}
-      />
+      <Box d="flex" justifyContent="space-between" alignItems="center">
+        <Breadcrumbs
+          items={[{ label: "Home", to: "/" }, { label: "SpaceX History" }]}
+        />
+        <Button
+          variantColor="teal"
+          onClick={reset}
+          mr="1.5rem"
+          isDisabled={countItem === 0}
+        >
+          Go back to the start
+        </Button>
+      </Box>
       <Timeline countItem={countItem} changeItem={changeItem} data={data} />
       <HistoryCard data={data[countItem]} />
     </>

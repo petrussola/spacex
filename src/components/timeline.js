@@ -27,7 +27,8 @@ export default function Timeline({ countItem, changeItem, data }) {
         padding="2rem"
       >
         <Tooltip
-          label={countItem !== 0 ? "Click to go back in time" : null}
+          label={countItem !== 0 ? "Click to go back in time" : "You have reached the start"}
+          isDisabled={countItem === 0}
           placement="bottom"
         >
           <IconButton
@@ -49,7 +50,12 @@ export default function Timeline({ countItem, changeItem, data }) {
           width="100%"
         />
         <Tooltip
-          label={countItem !== 0 ? "Click to advance in time" : null}
+          label={
+            countItem < data.length - 1
+              ? "Click to advance in time"
+              : "No more historical events"
+          }
+          isDisabled={countItem === data.length - 1}
           placement="bottom"
         >
           <IconButton
