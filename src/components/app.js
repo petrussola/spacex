@@ -7,6 +7,7 @@ import Launch from "./launch";
 import Home from "./home";
 import LaunchPads from "./launch-pads";
 import LaunchPad from "./launch-pad";
+import History from "./history";
 
 export default function App() {
   const [faveLaunches, setFaveLaunches] = useState([]);
@@ -68,6 +69,7 @@ export default function App() {
             />
           }
         />
+        <Route path="/spacex-history" element={<History />} />
       </Routes>
     </div>
   );
